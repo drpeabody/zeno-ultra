@@ -21,6 +21,7 @@ public class UserCollection {
     }
     
     public boolean contains(String username){
+        if(username == null || username.isEmpty()) return false;
         ListIterator itr = data.listIterator();
         while(itr.hasNext()){
             User u = (User) itr.next();

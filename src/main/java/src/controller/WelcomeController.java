@@ -1,6 +1,5 @@
 package src.controller;
 
-import java.util.HashMap;
 import spark.Request;
 import spark.Response;
 import src.Routes;
@@ -17,9 +16,8 @@ public class WelcomeController {
             res.redirect(Routes.PATH_HOME);
             return null;
         }
-        HashMap<String, String> p = new HashMap();
-        p.put("username", req.session().attribute(LoginController.ATRIB_USERNAME));
-        return ViewUtil.renderTemplate(p, "welcome.vtl");
+        ViewUtil.setProperty("username", req.session().attribute(LoginController.ATTRIB_USERNAME));
+        return ViewUtil.renderTemplate("welcome.vtl");
     }
 
 }

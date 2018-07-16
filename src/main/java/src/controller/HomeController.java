@@ -1,6 +1,5 @@
 package src.controller;
 
-import java.util.HashMap;
 import spark.Request;
 import spark.Response;
 import src.Routes;
@@ -13,15 +12,19 @@ import src.util.ViewUtil;
 public class HomeController {
     
     public static String render(Request req, Response res){
+        System.out.println("HomeController: Safe Render");
         if(LoginController.ensureLoggedIn(req, res)){
-            System.out.println("HOMECONTROLLER: User is already Logged in");
             res.redirect(Routes.PATH_WELCOME);
             return null;
         }
-//        HashMap<String, String> p = new HashMap<String, String>();
-//        p.put("username", req.attribute(null))
-        return ViewUtil.renderTemplate(new HashMap<>(), "home.vtl");
-        
+        ViewUtil.setProperty(LoginController.ATTRIB_RES_MSG, req.session().attribute(LoginController.ATTRIB_RES_MSG));
+        return ViewUtil.renderTemplate("home.vtl");
+    }
+    
+    public static String renderUnsafe(Request req){
+        ViewUtil.setProperty(LoginController.ATTRIB_RES_MSG, req.session().attribute(LoginController.ATTRIB_RES_MSG));
+        System.out.println("HoneController: Unsafe Render");
+        return ViewUtil.renderTemplate("home.vtl");
     }
 
 }

@@ -12,6 +12,23 @@ import spark.template.velocity.VelocityTemplateEngine;
  */
 public class ViewUtil {
     private static VelocityTemplateEngine engine = null;
+    private static HashMap<String, Object> model = new HashMap<>();
+    
+    public static void setProperty(String prop, Object val){
+        model.put(prop, val);
+    }
+    public static Object getProperty(String prop){
+        return model.get(prop);
+    }
+    public static void clearProperties(){
+        model.clear();
+    }
+    public static int numProperties(){
+        return model.size();
+    }
+    public static boolean isModelEmpty(){
+        return model.isEmpty();
+    }
     
     public static VelocityTemplateEngine getEngine(){
         if(engine == null){
@@ -26,7 +43,7 @@ public class ViewUtil {
     }
     
     
-    public static String renderTemplate(HashMap model, String path){
+    public static String renderTemplate(String path){
         model.put("val", "This is Value of val.");
         return getEngine().render(new ModelAndView(model, path));
     }
