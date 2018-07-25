@@ -1,0 +1,18 @@
+
+<h1> Welcome to Zeno Ultra </h1>
+<h1> $val </h1>
+
+<form method="POST" action="/register/" >
+   <input type="text" name="username" placeholder="Username"/>
+   <input type="password" name="pass" placeholder="password" />
+   <div> 
+       <label id="label">
+        #if(!$msg)
+            You must select a username to continue.
+        #else
+            $msg 
+        #end
+        </label>
+   </div>
+   <input type="submit" value="Login" />
+</form>

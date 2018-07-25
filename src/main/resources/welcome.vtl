@@ -5,3 +5,15 @@
 <form method="POST" action="/logout/">
    <input type="submit" value="Logout"/>
 </form>
+<br>
+
+<p> $num people are online right now. </p>
+
+
+#if($isInRoom)
+    You are sitting in your room. Ask Your friends to join the room hosted by "$username".
+#else
+
+    You must either create or join a room to play.
+#end
+    

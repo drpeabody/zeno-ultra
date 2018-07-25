@@ -2,9 +2,6 @@
 <h1> Welcome to Zeno Ultra </h1>
 <h1> $val </h1>
 
-
-<form method="POST" action="/login/" >
-   <input type="text" name="username" placeholder="Username"/>
    <div> 
        <label id="label">
         #if(!$msg)
@@ -14,30 +11,21 @@
         #end
         </label>
    </div>
-   <input type="submit" value="Login" />
-</form>
 
-<!--
-<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<fieldset>
+    <legend>Login</legend>
+    <form method="POST" action="/login/" >
+       <input type="text" name="username" placeholder="Username"/>
+       <input type="password" name="pass" placeholder="password" />
+       <input type="submit" value="Login" />
+    </form>
+</fieldset>
 
-<script>
-    $("#btn-submit").click(function() {
-        var name = $("#user").val();
-        if(name === "") $("#label").text("Username cannot be empty");
-        else if(name === "empty") $("#label").text("Thats cute. Choose wisely.");
-        else if(name === "wisely") $("#label").text("Seriously?. Choose another username.");
-        else if(name === "another username") $("#label").text("I fucking hate you.");
-        else{
-            $.ajax({
-               type: 'post',
-               url: '/login/',
-               success: function(data, status, xhr) { console.log(data);console.log(status);console.log(xhr); },
-               data: {
-                   username: $("#user").val()
-               },
-               error: function(data) { console.log("ERROR: " + data); }
-            });
-        }
-    });
-</script>
--->
+<fieldset>
+    <legend>Register</legend>
+    <form method="POST" action="/register/" >
+       <input type="text" name="username" placeholder="Username"/>
+       <input type="password" name="pass" placeholder="password" />
+       <input type="submit" value="Register" />
+    </form>
+</fieldset>

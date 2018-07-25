@@ -13,10 +13,10 @@ public class HomeController {
     
     public static String render(Request req, Response res){
         System.out.println("HomeController: Safe Render");
-        if(LoginController.ensureLoggedIn(req, res)){
+        if(LoginController.isSessionLoggedIn(req, res)){
             res.redirect(Routes.PATH_WELCOME);
             return null;
-        }
+        } 
         ViewUtil.setProperty(LoginController.ATTRIB_RES_MSG, req.session().attribute(LoginController.ATTRIB_RES_MSG));
         return ViewUtil.renderTemplate("home.vtl");
     }

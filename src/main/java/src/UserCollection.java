@@ -1,8 +1,11 @@
 package src;
 
-import java.util.ListIterator;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Stream;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
+import org.mindrot.jbcrypt.BCrypt;
+import src.util.Result;
 
 /**
  * @since Jul 12, 2018
@@ -10,101 +13,112 @@ import java.util.stream.Stream;
  */
 public class UserCollection {
     
-    private final CopyOnWriteArrayList<User> data;
+    private final ConcurrentHashMap<String, User> data;
     
     public UserCollection(){
-        data = new CopyOnWriteArrayList<>();
+        data = new ConcurrentHashMap<>();
+    }
+    
+    public String print(){
+        return Arrays.asList(data).toString();
     }
     
     public int count(){
         return data.size();
     }
-    
+    public Collection getAllUsernames(){
+        return data.keySet();
+    }
     public boolean contains(String username){
         if(username == null || username.isEmpty()) return false;
-        ListIterator itr = data.listIterator();
-        while(itr.hasNext()){
-            User u = (User) itr.next();
-            if(u.username.equals(username)) return true;
-        }
-        return false;
+        return data.containsKey(username);
+    }
+    public User get(String username){
+        return data.get(username);
     }
     
-    public User getBySessionID(String sessionID){
-        Stream t = data.stream().filter((b) -> b.sessionID.equals(sessionID));
-        if(t.count() < 1) return null;
-        return (User) t.findFirst().get();
-    }
-    
-    public DataResponse insert(String sessionID, String username){
+    public Result insert(String username, String plainTextPwd){
         User user;
         try{
-            user = new User(sessionID, username);
+            user = new User(username, BCrypt.hashpw(plainTextPwd, BCrypt.gensalt()));
         } catch(Exception e){
             System.out.println(e);
-            return DataResponse.failedResponse("Error Creating User");
+            return Result.failedResponse("Error Creating User");
         }
         
         if(!contains(user.username)){
-            data.add(user);
-            return DataResponse.successResponse("User logged in success.");
+            data.put(username, user);
+            return Result.successResponse("User registration is success.");
         }
         else{
-            return DataResponse.failedResponse("User already present in Collection.");
+            return Result.failedResponse("User already taken.");
         }
     }
-    public DataResponse removeByUsername(String username){
+    public Result remove(String username){
         if(!contains(username)){
-            return DataResponse.failedResponse("User not logegd in.");
+            return Result.failedResponse("User not logegd in.");
         }
         
-        if(data.removeIf((b) -> b.username.equals(username))){
-            return DataResponse.successResponse("User Logged out.");
+        if(data.remove(username) != null){
+            return Result.successResponse("User Logged out.");
         }
         else{
-            return DataResponse.failedResponse("Error Removing User");
+            return Result.failedResponse("Error Removing User");
         }
     }
+    
+    public Result authAndDo(String username, String plainTextPwd, Consumer<User> cons){
+        if(username == null || username.isEmpty()){
+            return Result.failedResponse("Empty Username.");
+        }
+        
+        User u = data.get(username);
+        if(u == null) {
+            return Result.failedResponse("Username does not exist");
+        }
+        if(BCrypt.checkpw(plainTextPwd, u.passHash)){
+            cons.accept(u);
+            return Result.successResponse("Access Granted");
+        }
+        return Result.failedResponse("Access Denied");
+    }
+    
+    public Result logIn(String username, String plainTextPwd){
+        return authAndDo(username, plainTextPwd, (u) -> u.logIn());
+    }
+    
     
     public static class User{
-        private String sessionID;
-        private String username;
+        final private String username;
+        final private String passHash;
+        private boolean isLoggedIn;
 
-        protected User(String id, String name){
-            if(id == null || name == null){
+        protected User(String name, String hash){
+            if(name == null || name.isEmpty()){
                 throw new IllegalArgumentException("Can't create User with Null Properties.");
             }
-            if(id.isEmpty() || name.isEmpty()){
-                throw new IllegalArgumentException("Can't create User with Empty Properties.");
+            if(hash == null || hash.isEmpty()){
+                throw new IllegalArgumentException("Can't create User with Null Properties.");
             }
-            sessionID = id;
             username = name;
+            passHash = hash;
+            isLoggedIn = false;
         }
         
-        public String getSessionID() {
-            return sessionID;
+        public boolean isLoggedIn() {
+            return isLoggedIn;
         }
-        public String getUsername() {
-            return username;
+        public void logIn(){
+            isLoggedIn = true;
         }
-        
-    }
-    
-    public static class DataResponse{
-        public final String msg;
-        public final boolean success;
-        
-        public DataResponse(String msg, boolean success){
-            this.msg = msg;
-            this.success = success;
+        public void logOut(){
+            isLoggedIn = false;
         }
-        
-        public static DataResponse successResponse(String msg){
-            return new DataResponse(msg, true);
-        }
-        public static DataResponse failedResponse(String msg){
-            return new DataResponse(msg, false);
-        }
-    }
 
+        @Override
+        public String toString() {
+            return "{" + username + ", " + passHash + ", " + isLoggedIn + " }";
+        }
+        
+    }
 }

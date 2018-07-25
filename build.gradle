@@ -25,6 +25,9 @@ dependencies {
     // TODO: Add dependencies here ...
     // You can read more about how to add dependency here:
     //   http://www.gradle.org/docs/current/userguide/dependency_management.html#sec:how_to_declare_your_dependencies
+//    compile "com.google.code.gson:gson:2.8.5"
+    compile "org.mindrot:jbcrypt:0.3m"
+    compile "org.mindrot:jbcrypt:0.3m:javadoc"
     compile "org.slf4j:slf4j-api:1.7.25"
     compile "org.slf4j:slf4j-simple:1.7.25"
     compile "com.sparkjava:spark-core:2.3:sources"
